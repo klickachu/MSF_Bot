@@ -35,6 +35,17 @@ async def on_ready():
 	await bot.change_presence(game=Game(name="!help"))
 
 @bot.command(pass_context = True)
+async def purge(ctx, number : int):
+# Confirm user has rights and delete messages in channel
+    author = ctx.message.author
+
+    if not author.server_permissions.manage_messages:
+	    return await bot.send_message(ctx.message.channel, "You need the **Config** role to use this command!")
+
+    deleted = await bot.purge_from(ctx.message.channel, limit = number)
+    await bot.send_message(ctx.message.channel, 'Deleted {} message(s)'.format(len(deleted)))
+
+@bot.command(pass_context = True)
 async def tmz(ctx):
     await mass_purge(ctx, TMZ_img)	
 	
@@ -72,6 +83,7 @@ bot.remove_command('help')
 async def help(ctx):
     embed = discord.Embed(title="MSF Raids", description="Reset MSF Strike Team Channels. List of commands are:", color=0xeee657)
 
+    embed.add_field(name="!purge #", value="Delete # of messages from current channel", inline=False)	
     embed.add_field(name="!tmz", value="Clear timezone channel and repost timezone chart", inline=False)	
     embed.add_field(name="!u30", value="Ultimus Level 30", inline=False)	
     embed.add_field(name="!u35", value="Ultimus Level 35", inline=False)	
